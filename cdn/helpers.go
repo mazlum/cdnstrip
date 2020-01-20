@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-// GetIPRangeFromText parse ip range body
-func GetIPRangeFromText(body string) []*net.IPNet {
+// getIPRangeFromText parse ip range body
+func getIPRangeFromText(body string) []*net.IPNet {
 	var ranges []*net.IPNet
 	// split and parse cidr addresses
 	for _, i := range strings.Split(body, "\n") {

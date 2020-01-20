@@ -6,13 +6,38 @@ import "net"
 func LoadAll() ([]*net.IPNet, error) {
 
 	var allRanges []*net.IPNet
+	cidrChan := make(chan []*net.IPNet, 3)
+	errChan := make(chan error, 3)
+	close(cidrChan)
+	close(errChan)
 
-	r, err := LoadCloudflare()
-	if err != nil {
-		return nil, err
+	go func() {
+		cloudflare, err := LoadCloudflare()
+		cidrChan <- cloudflare
+		errChan <- err
+	}()
+
+	go func() {
+		maxcdn, err := LoadMaxCdn()
+		cidrChan <- maxcdn
+		errChan <- err
+	}()
+
+	go func() {
+		incapsula, err := LoadIncapsula()
+		cidrChan <- incapsula
+		errChan <- err
+	}()
+
+	for err := range errChan {
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	allRanges = append(allRanges, r...)
+	for cidr := range cidrChan {
+		allRanges = append(allRanges, cidr...)
+	}
 
 	return allRanges, nil
 }

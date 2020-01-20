@@ -19,7 +19,7 @@ func LoadCloudflare() ([]*net.IPNet, error) {
 		return nil, err
 	}
 	// parse and get ipv4
-	ranges := GetIPRangeFromText(body)
+	ranges := getIPRangeFromText(body)
 
 	// Then get IPv6 range
 	body, err = getTextFromURL(cloudFlareIPv6Url)
@@ -27,7 +27,7 @@ func LoadCloudflare() ([]*net.IPNet, error) {
 		return nil, err
 	}
 	// get and append ipv6 ranges
-	ranges = append(ranges, GetIPRangeFromText(body)...)
+	ranges = append(ranges, getIPRangeFromText(body)...)
 
 	return ranges, nil
 }

@@ -14,5 +14,5 @@ func LoadMaxCdn() ([]*net.IPNet, error) {
 		return nil, err
 	}
 	// parse and get ipv4
-	return GetIPRangeFromText(body), nil
+	return getIPRangeFromText(body), nil
 }
