@@ -1,54 +1,38 @@
 package cdn
 
 import (
-	"io/ioutil"
+	"fmt"
 	"net"
-	"net/http"
-	"strings"
+)
+
+const (
+	cloudFlareIPv4Url string = "https://www.cloudflare.com/ips-v4"
+	cloudFlareIPv6Url string = "https://www.cloudflare.com/ips-v6"
 )
 
 // LoadCloudflare loads the IP range of cloudflare CDN
 func LoadCloudflare() ([]*net.IPNet, error) {
 
+	fmt.Println("Getting cloudflare ipv4 ranges")
 	// First get IPv4 range
-	resp, err := http.Get("https://www.cloudflare.com/ips-v4")
+	body, err := getIpTextFromUrl(cloudFlareIPv4Url)
+
 	if err != nil {
 		return nil, err
 	}
+	// parse and get ipv4
+	ranges := GetIPRangeFromText(body)
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var ranges []*net.IPNet
-	for _, i := range strings.Split(string(body), "\n") {
-		_, cidr, err := net.ParseCIDR(i)
-		if err != nil {
-			return nil, err
-		}
-		ranges = append(ranges, cidr)
-	}
-
+	fmt.Println("Getting cloudflare ipv6 ranges")
 	// Then get IPv6 range
-	resp, err = http.Get("https://www.cloudflare.com/ips-v6")
+	body, err = getIpTextFromUrl(cloudFlareIPv6Url)
 	if err != nil {
 		return nil, err
 	}
-
-	body, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, i := range strings.Split(string(body), "\n") {
-		_, cidr, err := net.ParseCIDR(i)
-		if err != nil {
-			return nil, err
-		}
-		ranges = append(ranges, cidr)
-	}
+	// get and append ipv6 ranges
+	ranges = append(ranges, GetIPRangeFromText(body)...)
 
 	return ranges, nil
-
 }
+
+
