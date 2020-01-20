@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// Parse ip range body
+// GetIPRangeFromText parse ip range body
 func GetIPRangeFromText(body string) []*net.IPNet {
 	var ranges []*net.IPNet
 	// split and parse cidr addresses
@@ -20,10 +20,9 @@ func GetIPRangeFromText(body string) []*net.IPNet {
 	return ranges
 }
 
-
-// get ip ranges from txt file url
-func getIpTextFromUrl(urlAddress string) (string, error) {
-	resp, err := http.Get(urlAddress)
+// getTextFromUrl response body with a basic GET request
+func getTextFromURL(addr string) (string, error) {
+	resp, err := http.Get(addr)
 	if err != nil {
 		return "", err
 	}

@@ -1,7 +1,6 @@
 package cdn
 
 import (
-	"fmt"
 	"net"
 )
 
@@ -13,9 +12,8 @@ const (
 // LoadCloudflare loads the IP range of cloudflare CDN
 func LoadCloudflare() ([]*net.IPNet, error) {
 
-	fmt.Println("Getting cloudflare ipv4 ranges")
 	// First get IPv4 range
-	body, err := getIpTextFromUrl(cloudFlareIPv4Url)
+	body, err := getTextFromURL(cloudFlareIPv4Url)
 
 	if err != nil {
 		return nil, err
@@ -23,9 +21,8 @@ func LoadCloudflare() ([]*net.IPNet, error) {
 	// parse and get ipv4
 	ranges := GetIPRangeFromText(body)
 
-	fmt.Println("Getting cloudflare ipv6 ranges")
 	// Then get IPv6 range
-	body, err = getIpTextFromUrl(cloudFlareIPv6Url)
+	body, err = getTextFromURL(cloudFlareIPv6Url)
 	if err != nil {
 		return nil, err
 	}
@@ -34,5 +31,3 @@ func LoadCloudflare() ([]*net.IPNet, error) {
 
 	return ranges, nil
 }
-
-
