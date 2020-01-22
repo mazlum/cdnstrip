@@ -9,14 +9,15 @@ type fastlyResponse struct {
 	Ipv6Addresses []string `json:"ipv6_addresses"`
 }
 
-func LoadFastly() ([]*net.IPNet, error)  {
+// LoadFastly loads the IP range of fastly CDN
+func LoadFastly() ([]*net.IPNet, error) {
 	var fastly fastlyResponse
-	response, err := getJsonFromURL(fastlyIPUrl, fastly)
+	response, err := getJSONFromURL(fastlyIPUrl, fastly)
 	if err != nil {
 		return nil, err
 	}
 	// get ipv4 addresses
-	ranges := getIpRangeFromArray(response["addresses"])
+	ranges := getIPRangeFromArray(response["addresses"])
 	// get regional ip ranges and return
-	return append(ranges, getIpRangeFromArray(response["ipv6_addresses"])...) , nil
+	return append(ranges, getIPRangeFromArray(response["ipv6_addresses"])...), nil
 }

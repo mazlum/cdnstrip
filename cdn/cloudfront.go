@@ -11,15 +11,15 @@ type cloudFrontResponse struct {
 	CLOUDFRONTREGIONALEDGEIPLIST []string `json:"CLOUDFRONT_REGIONAL_EDGE_IP_LIST"`
 }
 
-
-func LoadCloudFront() ([]*net.IPNet, error)  {
-		var cf cloudFrontResponse
-		response, err := getJsonFromURL(cloudFrontIPUrl, cf)
-		if err != nil {
-			return nil, err
-		}
-		// get global ip ranges
-		ranges := getIpRangeFromArray(response["CLOUDFRONT_GLOBAL_IP_LIST"])
-		// get regional ip ranges and return
-		return append(ranges, getIpRangeFromArray(response["CLOUDFRONT_REGIONAL_EDGE_IP_LIST"])...) , nil
+// LoadCloudFront loads the IP range of AWS CloudFront CDN
+func LoadCloudFront() ([]*net.IPNet, error) {
+	var cf cloudFrontResponse
+	response, err := getJSONFromURL(cloudFrontIPUrl, cf)
+	if err != nil {
+		return nil, err
+	}
+	// get global ip ranges
+	ranges := getIPRangeFromArray(response["CLOUDFRONT_GLOBAL_IP_LIST"])
+	// get regional ip ranges and return
+	return append(ranges, getIPRangeFromArray(response["CLOUDFRONT_REGIONAL_EDGE_IP_LIST"])...), nil
 }

@@ -9,7 +9,7 @@ import (
 )
 
 //
-func getIpRangeFromArray(arr []string) []*net.IPNet  {
+func getIPRangeFromArray(arr []string) []*net.IPNet {
 	var ranges []*net.IPNet
 	// split and parse cidr addresses
 	for _, i := range arr {
@@ -23,7 +23,7 @@ func getIpRangeFromArray(arr []string) []*net.IPNet  {
 
 // getIPRangeFromText parse ip range body
 func getIPRangeFromText(body string) []*net.IPNet {
-	return getIpRangeFromArray(strings.Split(body, "\n"))
+	return getIPRangeFromArray(strings.Split(body, "\n"))
 }
 
 // getTextFromUrl response body with a basic GET request
@@ -34,25 +34,25 @@ func getTextFromURL(addr string) (string, error) {
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			return "", err
-		}
-		return string(body), nil
+	if err != nil {
+		return "", err
+	}
+	return string(body), nil
 }
 
 // get json data and Unmarshal from url
 // data is a struct like cloudFrontResponse
-func getJsonFromURL(addr string, data interface{}) (map[string][]string, error) {
+func getJSONFromURL(addr string, data interface{}) (map[string][]string, error) {
 	res, err := http.Get(addr)
 	if err != nil {
 		return nil, err
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
-
 	if err != nil {
 		return nil, err
 	}
+
 	err = json.Unmarshal(body, &data)
 
 	returnData := make(map[string][]string)
