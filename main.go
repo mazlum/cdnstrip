@@ -8,7 +8,12 @@ import (
 func main() {
 	// Test
 	// cf, err := cdn.LoadCloudflare()
-	cf, err := cdn.LoadMaxCdn()
+
+	cf, err := cdn.LoadCloudFront()
 	fmt.Print(cf)
 	fmt.Println(err)
+
+	fs, err2 := cdn.LoadFastly()
+	fmt.Print(fs)
+	fmt.Println(err2)
 }
