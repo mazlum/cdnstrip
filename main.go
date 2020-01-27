@@ -18,7 +18,7 @@ func main() {
 	// fmt.Print(fs)
 	// fmt.Println(err2)
 
-	dg, err := cdn.LoadDDOSGuard()
+	dg, err := cdn.LoadAkamai()
 	fmt.Print(dg)
 	fmt.Println(err)
 

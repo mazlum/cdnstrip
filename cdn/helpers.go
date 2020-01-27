@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+const lookupASNNumbersURL = "https://api.hackertarget.com/aslookup/?q="
+
 //
 func getIPRangeFromArray(arr []string) []*net.IPNet {
 	var ranges []*net.IPNet
@@ -62,4 +64,17 @@ func getJSONFromURL(addr string, data interface{}) (map[string][]string, error) 
 		}
 	}
 	return returnData, err
+}
+
+// get ip ranges from ASN numbers.
+// we use hackertarget.com api for this.
+func getIPRangeFromASNNumbers(asnNumbers []string) []*net.IPNet {
+	var ranges []*net.IPNet
+	for _, ASN := range asnNumbers {
+		body, err := getTextFromURL(lookupASNNumbersURL + ASN)
+		if err == nil {
+			ranges = append(ranges, getIPRangeFromText(body)...)
+		}
+	}
+	return ranges
 }
