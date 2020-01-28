@@ -18,7 +18,7 @@ func main() {
 	// fmt.Print(fs)
 	// fmt.Println(err2)
 
-	dg, err := cdn.LoadAkamai()
+	dg, err := cdn.LoadAzure()
 	fmt.Print(dg)
 	fmt.Println(err)
 
