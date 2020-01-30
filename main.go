@@ -102,7 +102,7 @@ func main() {
 	wg.Wait()
 
 	s.Stop()
-	print("[+]" + s.Suffix + "\n")
+	print("[✔]" + s.Suffix + "\n")
 
 }
 
