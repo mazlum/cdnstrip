@@ -3,7 +3,7 @@
 
 Go module for striping CDN IP ranges.
 
-<img align="center" src="[https://](https://raw.githubusercontent.com/mazlum/cdnstrip/master/usage.gif)" alt="DEMO"/>
+<img align="center" src="https://github.com/mazlum/cdnstrip/raw/master/usage.gif" alt="DEMO"/>
 
 **Currently Stripping**
 - [x] Cloudflare
