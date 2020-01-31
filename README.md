@@ -15,6 +15,53 @@ Go module for striping CDN IP ranges.
 - [x] Incapsula
 - [x] Max CDN
 
+## Install
+```
+go get github.com/mazlum/cdnstrip
+```
+
+## Usage Parameters
+```
+  -i string
+    	Input [FileName|IP|CIDR]
+  -o string
+    	Output file name (default "filtered.txt")
+  -skip-cache
+    	Skip loading cache file for CDN IP ranges
+  -t int
+    	Number of threads (default 1)
+
+```
+
+## Example Code
+```
+package main
+
+import (
+	"log"
+
+	"github.com/mazlum/cdnstrip/cdn"
+)
+
+func main() {
+
+	ip := "1.1.1.1"
+
+	cdnRanges, err := cdn.LoadAll()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if cdn.Check(ip, cdnRanges) {
+		print("It's CDN IP !")
+	} else {
+		print("It's not CDN IP !")
+	}
+
+}
+```
+
+
 **Authors**
 - [Mazlum Ağar](https://twitter.com/mazlumagar)
 - [Ege Balcı](https://twitter.com/egeblc) 

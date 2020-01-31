@@ -37,7 +37,7 @@ func main() {
 	cacheFilePath := getCacheFilePath()
 
 	thread := flag.Int("t", 1, "Number of threads")
-	input := flag.String("i", "", "Input file name")
+	input := flag.String("i", "", "Input [FileName|IP|CIDR]")
 	out := flag.String("o", "filtered.txt", "Output file name")
 	skipCache := flag.Bool("skip-cache", false, "Skip loading cache file for CDN IP ranges")
 	flag.Parse()
@@ -87,13 +87,8 @@ func main() {
 	fatal(err)
 	defer outFile.Close()
 
-	// Start reading input
-	s.Suffix = " Reading input file..."
-	file, err := ioutil.ReadFile(*input)
-	fatal(err)
-	list := strings.Split(string(file), "\n")
+	list := loadInput(*input)
 	channel := make(chan string, len(list))
-
 	for _, ip := range list {
 		channel <- ip
 	}
@@ -141,6 +136,46 @@ func updateSpinnerStats() {
 	mutex.Unlock()
 }
 
+func getCacheFilePath() string {
+	usr, err := user.Current()
+	if err != nil {
+		fatal(err)
+	}
+	return usr.HomeDir + "/.config/cdnstrip.cache"
+}
+
+func loadInput(param string) []string {
+	s.Suffix = " Loading input..."
+
+	ip := net.ParseIP(param)
+	if ip != nil {
+		return []string{ip.String()}
+	}
+
+	ips, err := expandCIDR(param)
+	if err == nil {
+		return ips
+	}
+
+	file, err := ioutil.ReadFile(param)
+	fatal(err)
+	return strings.Split(string(file), "\n")
+}
+
+func expandCIDR(cidr string) ([]string, error) {
+	ip, ipnet, err := net.ParseCIDR(cidr)
+	if err != nil {
+		return nil, err
+	}
+
+	var ips []string
+	for ip := ip.Mask(ipnet.Mask); ipnet.Contains(ip); incIP(ip) {
+		ips = append(ips, ip.String())
+	}
+	// remove network address and broadcast address
+	return ips[1 : len(ips)-1], nil
+}
+
 func incIP(ip net.IP) {
 	for j := len(ip) - 1; j >= 0; j-- {
 		ip[j]++
@@ -148,14 +183,6 @@ func incIP(ip net.IP) {
 			break
 		}
 	}
-}
-
-func getCacheFilePath() string {
-	usr, err := user.Current()
-	if err != nil {
-		fatal(err)
-	}
-	return usr.HomeDir + "/.config/cdnstrip.cache"
 }
 
 func fatal(err error) {
