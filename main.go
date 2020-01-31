@@ -56,14 +56,17 @@ func main() {
 	s.Suffix = " Loading for cache file..."
 	cahceFile, err := ioutil.ReadFile(cacheFilePath)
 	if err == nil || *skipCache {
+		// read cache file
 		c := strings.Split(string(cahceFile), "\n")
 		if len(c) == 0 {
 			fatal(errors.New("empty cache file"))
 		}
 		for _, i := range c {
 			_, cidr, err := net.ParseCIDR(i)
-			fatal(err)
-			cdnRanges = append(cdnRanges, cidr)
+			if err == nil {
+				// append range
+				cdnRanges = append(cdnRanges, cidr)
+			}
 		}
 	} else {
 		// Create new cache file
@@ -71,6 +74,7 @@ func main() {
 		ranges, err := cdn.LoadAll()
 		fatal(err)
 		cdnRanges = ranges
+
 		s.Suffix = " Creating new cache file..."
 		cahceFile, err := os.OpenFile(cacheFilePath, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0664)
 		fatal(err)
@@ -152,7 +156,7 @@ func loadInput(param string) []string {
 		return []string{ip.String()}
 	}
 
-	ips, err := expandCIDR(param)
+	ips, err := cdn.ExpandCIDR(param)
 	if err == nil {
 		return ips
 	}
@@ -162,28 +166,6 @@ func loadInput(param string) []string {
 	return strings.Split(string(file), "\n")
 }
 
-func expandCIDR(cidr string) ([]string, error) {
-	ip, ipnet, err := net.ParseCIDR(cidr)
-	if err != nil {
-		return nil, err
-	}
-
-	var ips []string
-	for ip := ip.Mask(ipnet.Mask); ipnet.Contains(ip); incIP(ip) {
-		ips = append(ips, ip.String())
-	}
-	// remove network address and broadcast address
-	return ips[1 : len(ips)-1], nil
-}
-
-func incIP(ip net.IP) {
-	for j := len(ip) - 1; j >= 0; j-- {
-		ip[j]++
-		if ip[j] > 0 {
-			break
-		}
-	}
-}
 
 func fatal(err error) {
 	if err != nil {

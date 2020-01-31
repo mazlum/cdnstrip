@@ -78,3 +78,31 @@ func getIPRangeFromASNNumbers(asnNumbers []string) []*net.IPNet {
 	}
 	return ranges
 }
+
+// convert CIDR to ip Addresses
+func ExpandCIDR(cidr string) ([]string, error) {
+	ip, ipNet, err := net.ParseCIDR(cidr)
+	if err != nil {
+		return nil, err
+	}
+
+	var ips []string
+	for ip := ip.Mask(ipNet.Mask); ipNet.Contains(ip); incIP(ip) {
+		ips = append(ips, ip.String())
+	}
+	if len(ips) > 0 {
+		// remove network address and broadcast address
+		return ips[1 : len(ips)-1], nil
+	}
+	return ips, nil
+}
+
+// increment IP addresses
+func incIP(ip net.IP) {
+	for j := len(ip) - 1; j >= 0; j-- {
+		ip[j]++
+		if ip[j] > 0 {
+			break
+		}
+	}
+}

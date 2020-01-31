@@ -1,5 +1,5 @@
 # CDN Strip
-[![Go Report Card](https://goreportcard.com/badge/github.com/mazlum/cdnstrip)](https://goreportcard.com/report/github.com/mazlum/cdnstrip)  [![License](https://img.shields.io/packagist/l/doctrine/orm.svg)](https://raw.githubusercontent.com/mazlum/cdnstrip/master/LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mazlum/cdnstrip)](https://goreportcard.com/report/github.com/mazlum/cdnstrip)  [![License](https://img.shields.io/packagist/l/doctrine/orm.svg)](https://raw.githubusercontent.com/mazlum/cdnstrip/master/LICENCE)
 
 Go module for striping CDN IP ranges.
 
