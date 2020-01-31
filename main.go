@@ -32,7 +32,6 @@ var invalidIP int
 var cdnIP int
 var s *spinner.Spinner = spinner.New(spinner.CharSets[11], 100*time.Millisecond)
 
-
 func main() {
 
 	cacheFilePath := getCacheFilePath()
@@ -58,7 +57,6 @@ func main() {
 	cahceFile, err := ioutil.ReadFile(cacheFilePath)
 	if err == nil || *skipCache {
 		c := strings.Split(string(cahceFile), "\n")
-
 		if len(c) == 0 {
 			fatal(errors.New("empty cache file"))
 		}
@@ -76,8 +74,11 @@ func main() {
 		s.Suffix = " Creating new cache file..."
 		cahceFile, err := os.OpenFile(cacheFilePath, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0664)
 		fatal(err)
-		for _, r := range cdnRanges {
-			cahceFile.WriteString(r.String() + "\n")
+		for i, r := range cdnRanges {
+			cahceFile.WriteString(r.String())
+			if i != len(cdnRanges)-1 {
+				cahceFile.WriteString("\n")
+			}
 		}
 		cahceFile.Close()
 	}
@@ -170,4 +171,3 @@ func fatal(err error) {
 		os.Exit(1)
 	}
 }
-
