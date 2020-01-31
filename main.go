@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/user"
 	"runtime"
 	"strconv"
 	"strings"
@@ -31,12 +32,12 @@ var invalidIP int
 var cdnIP int
 var s *spinner.Spinner = spinner.New(spinner.CharSets[11], 100*time.Millisecond)
 
-// Cache file location
-const cacheFile = "/home/xeon/.config/cdnstrip.cache"
 
 func main() {
 
-	thread := flag.Int("t", 1, "Number of threds")
+	cacheFilePath := getCacheFilePath()
+
+	thread := flag.Int("t", 1, "Number of threads")
 	input := flag.String("i", "", "Input file name")
 	out := flag.String("o", "filtered.txt", "Output file name")
 	skipCache := flag.Bool("skip-cache", false, "Skip loading cache file for CDN IP ranges")
@@ -54,9 +55,10 @@ func main() {
 
 	// First check if cache exists
 	s.Suffix = " Loading for cache file..."
-	cahceFile, err := ioutil.ReadFile(cacheFile)
+	cahceFile, err := ioutil.ReadFile(cacheFilePath)
 	if err == nil || *skipCache {
 		c := strings.Split(string(cahceFile), "\n")
+
 		if len(c) == 0 {
 			fatal(errors.New("empty cache file"))
 		}
@@ -72,7 +74,7 @@ func main() {
 		fatal(err)
 		cdnRanges = ranges
 		s.Suffix = " Creating new cache file..."
-		cahceFile, err := os.OpenFile(cacheFile, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0664)
+		cahceFile, err := os.OpenFile(cacheFilePath, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0664)
 		fatal(err)
 		for _, r := range cdnRanges {
 			cahceFile.WriteString(r.String() + "\n")
@@ -103,7 +105,6 @@ func main() {
 
 	s.Stop()
 	print("[✔]" + s.Suffix + "\n")
-
 }
 
 func strip(channel chan string, file *os.File) {
@@ -148,6 +149,14 @@ func incIP(ip net.IP) {
 	}
 }
 
+func getCacheFilePath() string {
+	usr, err := user.Current()
+	if err != nil {
+		fatal(err)
+	}
+	return usr.HomeDir + "/.config/cdnstrip.cache"
+}
+
 func fatal(err error) {
 	if err != nil {
 		s.Stop()
@@ -161,3 +170,4 @@ func fatal(err error) {
 		os.Exit(1)
 	}
 }
+
